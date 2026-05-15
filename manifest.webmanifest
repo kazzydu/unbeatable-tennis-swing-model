@@ -1,0 +1,27 @@
+{
+  "name": "Unbeatable Tennis Swing Model",
+  "short_name": "Unbeatable",
+  "description": "Premium tennis academy management — Lagos, Nigeria. Led by Coach Mimi.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1d3a",
+  "theme_color": "#0b1d3a",
+  "icons": [
+    { "src": "/icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "maskable" }
+  ],
+  "categories": ["sports", "education", "business"],
+  "shortcuts": [
+    {
+      "name": "Admin Portal",
+      "short_name": "Admin",
+      "description": "Open the staff admin console",
+      "url": "/admin",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ],
+  "lang": "en-NG",
+  "dir": "ltr"
+}
