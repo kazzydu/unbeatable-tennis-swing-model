@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Unbeatable Tennis · Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --panel:#ffffff;
+      --border:#e6e8ee;
+      --border-strong:#d1d5db;
+      --text:#0b1220;
+      --text-2:#1f2937;
+      --muted:#6b7280;
+      --muted-2:#9ca3af;
+
+      --navy:#0b1d3a;
+      --navy-2:#13316b;
+      --navy-3:#1e3a8a;
+      --gold:#eab308;
+      --gold-2:#ca8a04;
+      --gold-light:#fef3c7;
+      --green:#16a34a;
+      --green-light:#dcfce7;
+      --rose:#e11d48;
+      --rose-light:#ffe4e6;
+      --indigo:#4f46e5;
+      --indigo-light:#e0e7ff;
+      --tennis:#4ade80;
+
+      --r-sm:8px; --r:12px; --r-lg:16px; --r-xl:22px;
+      --s1:rgba(15,23,42,.04);
+      --s2:rgba(15,23,42,.07);
+      --s3:rgba(15,23,42,.10);
+      --shadow-sm:0 1px 2px var(--s1), 0 1px 1px var(--s1);
+      --shadow:0 1px 2px var(--s1), 0 8px 24px var(--s2);
+      --shadow-lg:0 10px 15px -3px var(--s2), 0 4px 6px -4px var(--s2), 0 30px 60px -20px var(--s3);
+      --ring:0 0 0 4px rgba(234,179,8,.18);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;}
+    body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;font-feature-settings:'ss01','cv11';}
+
+    /* ─────────── Login ─────────── */
+    .login-screen{position:fixed;inset:0;z-index:200;display:flex;background:radial-gradient(1200px 600px at 80% -20%,rgba(74,222,128,.18),transparent 60%),radial-gradient(900px 500px at -10% 110%,rgba(234,179,8,.18),transparent 60%),linear-gradient(135deg,#06122a,#0b1d3a 55%,#13316b);color:#fff;}
+    .login-side{flex:1;padding:48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+    .login-side::before{content:'';position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(74,222,128,.15),transparent 70%);top:-120px;right:-100px;}
+    .login-brand{display:flex;align-items:center;gap:14px;}
+    .login-brand .mark{width:56px;height:56px;}
+    .login-brand .mark svg{width:100%;height:100%;}
+    .login-brand h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:-.01em;}
+    .login-brand small{display:block;font-size:.7rem;opacity:.7;letter-spacing:.18em;text-transform:uppercase;margin-top:3px;}
+    .login-hero{max-width:480px;position:relative;z-index:1;}
+    .login-hero .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px;}
+    .login-hero .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--tennis);box-shadow:0 0 10px var(--tennis);}
+    .login-hero h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.6rem;font-weight:800;line-height:1.05;letter-spacing:-.02em;margin-bottom:14px;}
+    .login-hero h2 span{background:linear-gradient(135deg,var(--gold),#fde047);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .login-hero p{font-size:1rem;opacity:.78;max-width:440px;}
+    .login-foot{font-size:.78rem;opacity:.6;position:relative;z-index:1;}
+
+    .login-form-wrap{flex:0 0 460px;background:#fff;color:var(--text);padding:48px;display:flex;flex-direction:column;justify-content:center;box-shadow:-30px 0 60px rgba(0,0,0,.18);}
+    .login-form h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.65rem;font-weight:800;color:var(--navy);letter-spacing:-.01em;margin-bottom:6px;}
+    .login-form .lf-sub{color:var(--muted);font-size:.92rem;margin-bottom:32px;}
+    .login-form .field{margin-bottom:16px;}
+    .login-form label{display:block;font-size:.78rem;font-weight:700;color:var(--text-2);margin-bottom:6px;letter-spacing:.02em;}
+    .login-form input{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--r);font-size:.95rem;font-family:inherit;transition:border-color .15s,box-shadow .15s;background:#fff;}
+    .login-form input:focus{outline:none;border-color:var(--gold);box-shadow:var(--ring);}
+    .login-form .lf-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;transition:background .15s,transform .1s;letter-spacing:.01em;}
+    .login-form .lf-btn:hover{background:var(--navy-2);}
+    .login-form .lf-btn:active{transform:translateY(1px);}
+    .login-form .lf-err{margin-top:14px;padding:11px 14px;background:var(--rose-light);color:var(--rose);border-radius:var(--r-sm);font-size:.85rem;font-weight:600;display:none;}
+    .login-form .lf-err.show{display:block;animation:shake .35s ease;}
+    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+    .login-form .lf-hint{margin-top:24px;padding:14px;background:var(--bg);border:1px dashed var(--border-strong);border-radius:var(--r-sm);font-size:.78rem;color:var(--muted);}
+    .login-form .lf-hint strong{color:var(--text);}
+
+    @media (max-width:880px){
+      .login-screen{flex-direction:column;}
+      .login-side{padding:32px 24px;flex:0 0 auto;}
+      .login-form-wrap{flex:1;padding:32px 24px;border-radius:24px 24px 0 0;box-shadow:0 -20px 40px rgba(0,0,0,.2);}
+      .login-hero h2{font-size:1.9rem;}
+    }
+
+    /* ─────────── App shell ─────────── */
+    .app{display:none;min-height:100vh;}
+    .app.show{display:grid;grid-template-columns:260px 1fr;}
+
+    /* Sidebar */
+    .sidebar{background:#0a1426;color:rgba(255,255,255,.85);padding:20px 14px;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.06);position:sticky;top:0;height:100vh;}
+    .side-brand{display:flex;align-items:center;gap:12px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:16px;}
+    .side-brand .mark{width:42px;height:42px;flex-shrink:0;}
+    .side-brand .mark svg{width:100%;height:100%;}
+    .side-brand .txt h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:.95rem;font-weight:800;color:#fff;letter-spacing:-.01em;line-height:1.15;}
+    .side-brand .txt p{font-size:.65rem;opacity:.55;letter-spacing:.18em;text-transform:uppercase;margin-top:3px;}
+
+    .side-section{font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:14px 12px 8px;}
+    .nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:var(--r-sm);font-size:.88rem;font-weight:600;color:rgba(255,255,255,.72);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:inherit;margin-bottom:2px;}
+    .nav-item:hover{background:rgba(255,255,255,.05);color:#fff;}
+    .nav-item.active{background:linear-gradient(135deg,var(--navy-3),var(--navy-2));color:#fff;box-shadow:0 4px 14px rgba(30,58,138,.4);}
+    .nav-item .ic{width:18px;height:18px;flex-shrink:0;opacity:.85;}
+    .nav-item .nv-badge{margin-left:auto;background:rgba(255,255,255,.1);font-size:.68rem;padding:2px 8px;border-radius:99px;font-weight:700;}
+    .nav-item.active .nv-badge{background:var(--gold);color:var(--navy);}
+
+    .side-foot{margin-top:auto;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);}
+    .user-block{display:flex;align-items:center;gap:11px;padding:10px;border-radius:var(--r-sm);background:rgba(255,255,255,.04);}
+    .user-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-2));display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);font-size:.95rem;}
+    .user-meta{flex:1;min-width:0;}
+    .user-meta .nm{font-size:.84rem;font-weight:700;color:#fff;}
+    .user-meta .rl{font-size:.7rem;color:rgba(255,255,255,.55);}
+    .logout-btn{background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;padding:8px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .logout-btn:hover{background:rgba(255,255,255,.08);color:#fff;}
+
+    /* Main */
+    .main{display:flex;flex-direction:column;min-width:0;}
+    .topbar{background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:14px;position:sticky;top:0;z-index:20;}
+    .crumb{display:flex;align-items:center;gap:10px;}
+    .crumb-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.15rem;font-weight:800;color:var(--navy);letter-spacing:-.01em;}
+    .crumb-sub{font-size:.84rem;color:var(--muted);}
+    .top-actions{display:flex;gap:8px;align-items:center;}
+
+    .content{padding:28px;flex:1;}
+
+    /* Mobile */
+    .menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;color:var(--text);}
+    .menu-toggle:hover{background:var(--bg);}
+    @media (max-width:980px){
+      .app.show{grid-template-columns:1fr;}
+      .sidebar{position:fixed;top:0;left:0;width:280px;z-index:50;transform:translateX(-100%);transition:transform .25s ease;}
+      .sidebar.open{transform:translateX(0);box-shadow:0 30px 60px rgba(0,0,0,.4);}
+      .menu-toggle{display:inline-flex;}
+      .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;}
+      .sidebar-overlay.show{display:block;}
+      .content{padding:20px 16px;}
+      .topbar{padding:12px 16px;}
+    }
+
+    /* ─────────── Panels ─────────── */
+    .panel{display:none;animation:fadeUp .25s ease;}
+    .panel.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+    /* Stats */
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+    .stat-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 22px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;}
+    .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+    .stat-card .icon-wrap{position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+    .stat-card .icon-wrap svg{width:18px;height:18px;}
+    .stat-card .label{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;font-weight:700;margin-bottom:10px;}
+    .stat-card .value{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.85rem;font-weight:800;color:var(--navy);line-height:1.05;letter-spacing:-.02em;}
+    .stat-card .sub{font-size:.78rem;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:6px;}
+
+    .stat-card.tone-gold .icon-wrap{background:var(--gold-light);color:var(--gold-2);}
+    .stat-card.tone-green .icon-wrap{background:var(--green-light);color:var(--green);}
+    .stat-card.tone-rose .icon-wrap{background:var(--rose-light);color:var(--rose);}
+    .stat-card.tone-indigo .icon-wrap{background:var(--indigo-light);color:var(--indigo);}
+
+    /* Cards */
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);margin-bottom:20px;}
+    .card-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+    .card-head h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:9px;letter-spacing:-.01em;}
+    .card-body{padding:22px;}
+    .card-body.tight{padding:6px;}
+
+    /* Section header */
+    .section-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;}
+    .section-header h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:800;color:var(--navy);letter-spacing:-.02em;}
+    .section-header p{font-size:.9rem;color:var(--muted);margin-top:3px;}
+
+    /* Buttons */
+    .btn{padding:10px 18px;border:none;border-radius:var(--r-sm);font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;transition:all .15s;letter-spacing:.005em;white-space:nowrap;}
+    .btn:active{transform:translateY(1px);}
+    .btn-primary{background:var(--navy);color:#fff;}
+    .btn-primary:hover{background:var(--navy-2);box-shadow:0 6px 14px rgba(11,29,58,.25);}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:var(--navy);font-weight:700;box-shadow:0 4px 10px rgba(234,179,8,.3);}
+    .btn-gold:hover{box-shadow:0 6px 14px rgba(234,179,8,.4);}
+    .btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border-strong);}
+    .btn-ghost:hover{background:var(--bg);border-color:var(--muted-2);}
+    .btn-danger{background:var(--rose);color:#fff;}
+    .btn-danger:hover{background:#be123c;}
+    .btn-sm{padding:7px 12px;font-size:.78rem;border-radius:7px;}
+    .btn-icon{padding:8px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;}
+    .btn-icon:hover{background:var(--bg);color:var(--text);border-color:var(--border-strong);}
+    .btn-icon svg{width:16px;height:16px;}
+
+    /* Tables */
+    .table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm);}
+    table{width:100%;border-collapse:collapse;}
+    thead{background:#fafbff;}
+    th{text-align:left;padding:13px 18px;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+    td{padding:14px 18px;border-bottom:1px solid var(--border);font-size:.88rem;color:var(--text-2);vertical-align:middle;}
+    tbody tr:last-child td{border-bottom:none;}
+    tbody tr{transition:background .12s;}
+    tbody tr:hover{background:#fafbff;}
+    tbody tr.row-empty:hover{background:transparent;}
+    .nowrap{white-space:nowrap;}
+
+    /* Pills / badges */
+    .pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700;letter-spacing:.02em;}
+    .pill-green{background:var(--green-light);color:var(--green);}
+    .pill-rose{background:var(--rose-light);color:var(--rose);}
+    .pill-gold{background:var(--gold-light);color:var(--gold-2);}
+    .pill-indigo{background:var(--indigo-light);color:var(--indigo);}
+    .pill-gray{background:var(--bg);color:var(--muted);}
+
+    .tier-badge{padding:4px 12px;border-radius:99px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;}
+    .tier-platinum{background:linear-gradient(135deg,#e2e8f0,#94a3b8);color:#0f172a;}
+    .tier-gold{background:linear-gradient(135deg,#fde68a,#f59e0b);color:#78350f;}
+    .tier-silver{background:linear-gradient(135deg,#f1f5f9,#cbd5e1);color:#334155;}
+    .tier-bronze{background:linear-gradient(135deg,#fed7aa,#c2410c);color:#7c2d12;}
+
+    /* Forms */
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:14px;}
+    .field{display:flex;flex-direction:column;gap:6px;}
+    .field label{font-size:.76rem;font-weight:700;color:var(--text-2);letter-spacing:.01em;}
+    .field input,.field select,.field textarea{padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.9rem;font-family:inherit;background:#fff;color:var(--text);transition:border-color .15s,box-shadow .15s;}
+    .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:var(--ring);}
+    .field textarea{resize:vertical;min-height:64px;}
+
+    /* Toolbar */
+    .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+    .search-input{flex:1;min-width:220px;padding:10px 14px 10px 38px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.88rem;font-family:inherit;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='m21 21-4.3-4.3'/></svg>") no-repeat 13px center;transition:border-color .15s,box-shadow .15s;}
+    .search-input:focus{outline:none;border-color:var(--gold);box-shadow:var(--ring);}
+
+    /* Empty state */
+    .empty{text-align:center;padding:54px 22px;}
+    .empty .ico{width:64px;height:64px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--muted-2);}
+    .empty .ico svg{width:30px;height:30px;}
+    .empty h4{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+    .empty p{font-size:.86rem;color:var(--muted);max-width:340px;margin:0 auto;}
+
+    /* Modal */
+    .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(11,29,58,.55);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;padding:20px;animation:fadeIn .15s ease;}
+    .modal-backdrop.active{display:flex;}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    .modal{background:#fff;border-radius:var(--r-xl);max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:popIn .2s ease;}
+    @keyframes popIn{from{opacity:0;transform:translateY(10px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+    .modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+    .modal-head h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:800;color:var(--navy);letter-spacing:-.01em;}
+    .modal-body{padding:24px;}
+    .modal-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:#fafbff;border-radius:0 0 var(--r-xl) var(--r-xl);}
+    .close-btn{background:none;border:none;font-size:1.6rem;cursor:pointer;color:var(--muted-2);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .close-btn:hover{background:var(--bg);color:var(--text);}
+
+    /* Roster */
+    .roster-list{display:grid;gap:8px;}
+    .roster-row{display:flex;align-items:center;justify-content:space-between;background:#fafbff;padding:12px 16px;border-radius:var(--r);border:1px solid var(--border);gap:14px;flex-wrap:wrap;}
+    .roster-name{font-weight:700;color:var(--text);font-size:.92rem;flex:1;min-width:160px;}
+    .roster-name small{display:block;font-weight:500;font-size:.78rem;color:var(--muted);margin-top:2px;}
+    .roster-actions{display:flex;gap:6px;}
+    .att-btn{padding:7px 14px;border:1.5px solid var(--border-strong);background:#fff;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--muted);transition:all .15s;font-family:inherit;}
+    .att-btn:hover{border-color:var(--muted-2);}
+    .att-btn.present.selected{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 10px rgba(22,163,74,.3);}
+    .att-btn.absent.selected{background:var(--rose);border-color:var(--rose);color:#fff;box-shadow:0 4px 10px rgba(225,29,72,.3);}
+    .att-btn.late.selected{background:var(--gold);border-color:var(--gold-2);color:var(--navy);box-shadow:0 4px 10px rgba(234,179,8,.3);}
+
+    /* Invoice preview */
+    .invoice-preview{background:#fff;border-radius:var(--r-lg);padding:32px;border:1px solid var(--border);}
+    .inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:26px;padding-bottom:20px;border-bottom:2px solid var(--navy);gap:20px;}
+    .inv-header h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;color:var(--navy);font-weight:800;letter-spacing:-.01em;}
+    .inv-header small{color:var(--muted);font-size:.8rem;}
+    .inv-num{font-size:.8rem;color:var(--muted);text-align:right;}
+    .inv-num .lg{font-size:1.05rem;font-weight:800;color:var(--navy);}
+    .inv-bill{margin-bottom:18px;font-size:.92rem;}
+    .inv-bill strong{display:block;color:var(--muted);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;font-weight:700;}
+    .inv-rows{margin:20px 0;}
+    .inv-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--border);font-size:.92rem;}
+    .inv-total{display:flex;justify-content:space-between;padding-top:14px;border-top:2px solid var(--navy);font-weight:800;font-size:1.1rem;color:var(--navy);font-family:'Plus Jakarta Sans',sans-serif;}
+
+    /* Toast */
+    .toast-stack{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:8px;z-index:300;}
+    .toast{background:var(--navy);color:#fff;padding:11px 16px;border-radius:var(--r-sm);font-size:.85rem;font-weight:600;box-shadow:var(--shadow-lg);animation:toastIn .25s ease;display:flex;align-items:center;gap:9px;min-width:240px;}
+    .toast.success{background:var(--green);}
+    .toast.error{background:var(--rose);}
+    @keyframes toastIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+
+    /* Print */
+    @media print{
+      .sidebar,.topbar,.modal-foot,.toast-stack{display:none !important;}
+      .app{display:block !important;}
+      .content{padding:0;}
+      .modal-backdrop{position:static;background:#fff;display:block !important;padding:0;}
+      .modal{box-shadow:none;max-width:100%;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Login screen ─── -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-side">
+    <div class="login-brand">
+      <div class="mark">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="92" fill="#0b1d3a"/>
+          <circle cx="100" cy="100" r="82" fill="#4ade80"/>
+          <ellipse cx="88" cy="82" rx="32" ry="38" fill="none" stroke="#0b1d3a" stroke-width="7"/>
+          <g stroke="#0b1d3a" stroke-width="2.2" stroke-linecap="round">
+            <line x1="62" y1="82" x2="114" y2="82"/><line x1="64" y1="66" x2="112" y2="66"/><line x1="68" y1="98" x2="108" y2="98"/>
+            <line x1="88" y1="46" x2="88" y2="120"/><line x1="74" y1="50" x2="74" y2="116"/><line x1="102" y1="50" x2="102" y2="116"/>
+          </g>
+          <line x1="98" y1="116" x2="128" y2="158" stroke="#0b1d3a" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="140" cy="124" r="13" fill="#bef264" stroke="#0b1d3a" stroke-width="2.5"/>
+          <path d="M130 120 Q140 124 150 120" stroke="#fff" stroke-width="1.5" fill="none"/>
+          <path d="M130 128 Q140 124 150 128" stroke="#fff" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Unbeatable Tennis<br/>Swing Model</h1>
+        <small>Admin Console</small>
+      </div>
+    </div>
+    <div class="login-hero">
+      <span class="pill"><span class="dot"></span> Secure Staff Area</span>
+      <h2>Build champions, <span>on and off the court.</span></h2>
+      <p>Manage students, attendance, invoicing and sponsorships from one elegant workspace. Led by Coach Mimi.</p>
+    </div>
+    <div class="login-foot">© 2026 Unbeatable Tennis Swing Model · Lagos, Nigeria</div>
+  </div>
+
+  <div class="login-form-wrap">
+    <form class="login-form" onsubmit="handleLogin(event)">
+      <h3>Welcome back</h3>
+      <p class="lf-sub">Sign in to access the admin console.</p>
+      <div class="field">
+        <label for="loginUser">Email</label>
+        <input id="loginUser" type="email" autocomplete="email" required autofocus placeholder="akosilelinda@gmail.com"/>
+      </div>
+      <div class="field">
+        <label for="loginPass">Password</label>
+        <input id="loginPass" type="password" autocomplete="current-password" required/>
+      </div>
+      <button type="submit" class="lf-btn">Sign in →</button>
+      <div class="lf-err" id="lfErr">Invalid username or password.</div>
+      <div class="lf-hint">
+        <strong>Admin access</strong><br/>
+        Email: <code>akosilelinda@gmail.com</code> &nbsp;·&nbsp; Password: <code>Unbeatable@2026</code>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ─── App ─── -->
+<div class="app" id="app">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sideOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="side-brand">
+      <div class="mark">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="92" fill="#0b1d3a"/>
+          <circle cx="100" cy="100" r="82" fill="#4ade80"/>
+          <ellipse cx="88" cy="82" rx="32" ry="38" fill="none" stroke="#0b1d3a" stroke-width="7"/>
+          <g stroke="#0b1d3a" stroke-width="2.2" stroke-linecap="round">
+            <line x1="62" y1="82" x2="114" y2="82"/><line x1="64" y1="66" x2="112" y2="66"/><line x1="68" y1="98" x2="108" y2="98"/>
+            <line x1="88" y1="46" x2="88" y2="120"/><line x1="74" y1="50" x2="74" y2="116"/><line x1="102" y1="50" x2="102" y2="116"/>
+          </g>
+          <line x1="98" y1="116" x2="128" y2="158" stroke="#0b1d3a" stroke-width="9" stroke-linecap="round"/>
+          <circle cx="140" cy="124" r="13" fill="#bef264" stroke="#0b1d3a" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <h4>Unbeatable Tennis</h4>
+        <p>Admin</p>
+      </div>
+    </div>
+
+    <div class="side-section">Workspace</div>
+    <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-item" data-tab="students" onclick="switchTab('students')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Students<span class="nv-badge" id="cntStudents">0</span>
+    </button>
+    <button class="nav-item" data-tab="attendance" onclick="switchTab('attendance')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+      Attendance
+    </button>
+    <button class="nav-item" data-tab="invoices" onclick="switchTab('invoices')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+      Invoices<span class="nv-badge" id="cntInvoices">0</span>
+    </button>
+    <button class="nav-item" data-tab="sponsors" onclick="switchTab('sponsors')">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+      Sponsors<span class="nv-badge" id="cntSponsors">0</span>
+    </button>
+
+    <div class="side-section">Data</div>
+    <button class="nav-item" onclick="exportData()">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export JSON
+    </button>
+    <label class="nav-item" style="cursor:pointer;">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Import JSON
+      <input type="file" accept="application/json" style="display:none;" onchange="importData(event)"/>
+    </label>
+    <a class="nav-item" href="/" target="_blank">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      View Public Site
+    </a>
+
+    <div class="side-foot">
+      <div class="user-block">
+        <div class="user-avatar">A</div>
+        <div class="user-meta">
+          <div class="nm">Admin</div>
+          <div class="rl">Coach Mimi · CEO</div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Sign out">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Open menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="crumb">
+          <div>
+            <div class="crumb-title" id="topTitle">Dashboard</div>
+            <div class="crumb-sub" id="topSub">Welcome back, Coach Mimi</div>
+          </div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-ghost btn-sm" onclick="window.print()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Dashboard -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card tone-indigo">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <div class="label">Total Students</div>
+            <div class="value" id="statStudents">0</div>
+            <div class="sub">Active enrolment</div>
+          </div>
+          <div class="stat-card tone-green">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="label">Revenue (Paid)</div>
+            <div class="value" id="statRevenue">₦0</div>
+            <div class="sub">From paid invoices</div>
+          </div>
+          <div class="stat-card tone-rose">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="label">Outstanding</div>
+            <div class="value" id="statOutstanding">₦0</div>
+            <div class="sub">Unpaid invoices</div>
+          </div>
+          <div class="stat-card tone-gold">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+            <div class="label">Total Sponsorship</div>
+            <div class="value" id="statSponsor">₦0</div>
+            <div class="sub">Across all sponsors</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>📋 Recent Attendance Sessions</h3></div>
+          <div class="card-body tight" id="recentAttendance"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>💳 Latest Invoices</h3></div>
+          <div class="card-body tight" id="recentInvoices"></div>
+        </div>
+      </div>
+
+      <!-- Students -->
+      <div class="panel" id="panel-students">
+        <div class="section-header">
+          <div>
+            <h2>Students</h2>
+            <p>Manage enrolment and contact details</p>
+          </div>
+          <button class="btn btn-gold" onclick="openStudentModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Student
+          </button>
+        </div>
+        <div class="toolbar">
+          <input class="search-input" placeholder="Search by name, level or guardian…" oninput="renderStudents(this.value)"/>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Age</th><th>Level</th><th>Guardian</th><th>Phone</th><th>Joined</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody id="studentsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Attendance -->
+      <div class="panel" id="panel-attendance">
+        <div class="section-header">
+          <div>
+            <h2>Attendance</h2>
+            <p>Record session attendance</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>📅 Take Attendance</h3></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field"><label>Session Date</label><input type="date" id="attDate"/></div>
+              <div class="field"><label>Session Type</label>
+                <select id="attType">
+                  <option>Group Training</option><option>Private Lesson</option>
+                  <option>Drill Session</option><option>Match Play</option><option>Tournament</option>
+                </select>
+              </div>
+              <div class="field"><label>Coach Notes</label><input type="text" id="attNotes" placeholder="e.g. Footwork focus"/></div>
+            </div>
+            <div class="roster-list" id="rosterList"></div>
+            <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="saveAttendance()">💾 Save Session</button>
+              <button class="btn btn-ghost" onclick="markAllPresent()">Mark All Present</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>📜 Attendance History</h3></div>
+          <div class="card-body tight">
+            <table>
+              <thead><tr><th>Date</th><th>Type</th><th>Present</th><th>Absent</th><th>Late</th><th>Notes</th><th style="text-align:right;">Actions</th></tr></thead>
+              <tbody id="attendanceHistoryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invoices -->
+      <div class="panel" id="panel-invoices">
+        <div class="section-header">
+          <div>
+            <h2>Invoices</h2>
+            <p>Issue and track student invoices</p>
+          </div>
+          <button class="btn btn-gold" onclick="openInvoiceModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Invoice
+          </button>
+        </div>
+        <div class="toolbar">
+          <input class="search-input" placeholder="Search by student or invoice number…" oninput="renderInvoices(this.value)"/>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Invoice #</th><th>Student</th><th>Date</th><th>Description</th><th>Amount</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody id="invoicesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sponsors -->
+      <div class="panel" id="panel-sponsors">
+        <div class="section-header">
+          <div>
+            <h2>Sponsorship</h2>
+            <p>Partner with us. Manage academy sponsors and contributions.</p>
+          </div>
+          <button class="btn btn-gold" onclick="openSponsorModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Sponsor
+          </button>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card tone-indigo">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+            <div class="label">Active Sponsors</div>
+            <div class="value" id="statSponsorCount">0</div>
+          </div>
+          <div class="stat-card tone-green">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="label">Total Contribution</div>
+            <div class="value" id="statSponsorTotal">₦0</div>
+          </div>
+          <div class="stat-card tone-gold">
+            <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <div class="label">Top Sponsor</div>
+            <div class="value" id="statTopTier" style="font-size:1.05rem;line-height:1.2;"></div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input class="search-input" placeholder="Search by sponsor name or tier…" oninput="renderSponsors(this.value)"/>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Sponsor</th><th>Tier</th><th>Contact</th><th>Phone</th><th>Amount</th><th>Since</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody id="sponsorsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Modal</h3>
+      <button class="close-btn" onclick="closeModal()" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+// ─────────── Supabase client ───────────
+const SUPA_URL = 'https://ztsxtrjljxhfybxsumhs.supabase.co';
+const SUPA_KEY = 'sb_publishable_s8cOwW-0jtgLNViPVwKbSg_PPd_29aM';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+
+// ─────────── Helpers ───────────
+const $ = sel => document.querySelector(sel);
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function fmt$(n){ return '₦' + Number(n||0).toLocaleString(undefined,{minimumFractionDigits:0, maximumFractionDigits:2}); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function today(){ return new Date().toISOString().slice(0,10); }
+function fmtDate(d){ if(!d) return ''; const x=new Date(d); return x.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); }
+function studentInitials(name){ return (name||'').split(' ').map(s=>s[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '?'; }
+
+// ─────────── Toast ───────────
+function toast(msg, kind=''){
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  const icon = kind==='success'?'✓': kind==='error'?'✕':'ℹ';
+  el.innerHTML = `<span>${icon}</span><span>${esc(msg)}</span>`;
+  stack.appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .2s'; el.style.opacity='0'; setTimeout(()=>el.remove(),200); }, 3000);
+}
+
+// ─────────── Auth ───────────
+async function checkSession(){
+  const { data } = await sb.auth.getSession();
+  return !!data.session;
+}
+function showLogin(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('app').classList.remove('show');
+}
+async function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').classList.add('show');
+  await boot();
+}
+async function handleLogin(e){
+  e.preventDefault();
+  const email = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const btn = e.target.querySelector('.lf-btn');
+  const origText = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  btn.disabled = false; btn.textContent = origText;
+  if(error){
+    const err = document.getElementById('lfErr');
+    err.textContent = error.message || 'Invalid email or password.';
+    err.classList.add('show');
+    setTimeout(()=>err.classList.remove('show'), 3500);
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+    return;
+  }
+  await showApp();
+  toast('Signed in. Welcome back, Coach.', 'success');
+}
+async function logout(){
+  if(!confirm('Sign out of the admin console?')) return;
+  await sb.auth.signOut();
+  location.reload();
+}
+
+// ─────────── State (cache) ───────────
+let state = { students:[], attendance:[], invoices:[], sponsors:[] };
+let loading = false;
+
+async function loadAll(){
+  loading = true;
+  try{
+    const [stu, sess, inv, spn] = await Promise.all([
+      sb.from('utsm_students').select('*').order('created_at', { ascending:false }),
+      sb.from('utsm_attendance_sessions').select('*, records:utsm_attendance_records(*)').order('date', { ascending:false }),
+      sb.from('utsm_invoices').select('*').order('date', { ascending:false, nullsFirst:false }),
+      sb.from('utsm_sponsors').select('*').order('created_at', { ascending:false })
+    ]);
+    if(stu.error)  throw stu.error;
+    if(sess.error) throw sess.error;
+    if(inv.error)  throw inv.error;
+    if(spn.error)  throw spn.error;
+    state.students = stu.data || [];
+    state.attendance = sess.data || [];
+    state.invoices = inv.data || [];
+    state.sponsors = spn.data || [];
+  } catch(e){
+    toast('Load failed: ' + (e.message||e), 'error');
+    console.error(e);
+  } finally {
+    loading = false;
+  }
+}
+
+// ─────────── Sidebar (mobile) ───────────
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sideOverlay').classList.toggle('show');
+}
+
+// ─────────── Tabs ───────────
+const TAB_META = {
+  dashboard:{title:'Dashboard', sub:'Welcome back, Coach Mimi'},
+  students:{title:'Students', sub:'Manage enrolment'},
+  attendance:{title:'Attendance', sub:'Track session presence'},
+  invoices:{title:'Invoices', sub:'Issue and track payments'},
+  sponsors:{title:'Sponsorship', sub:'Manage academy partners'}
+};
+function switchTab(t){
+  document.querySelectorAll('.nav-item[data-tab]').forEach(b=>b.classList.toggle('active', b.dataset.tab===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+t));
+  const meta = TAB_META[t]; if(meta){ document.getElementById('topTitle').textContent = meta.title; document.getElementById('topSub').textContent = meta.sub; }
+  if(window.innerWidth<=980){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sideOverlay').classList.remove('show'); }
+  if(t==='dashboard') renderDashboard();
+  if(t==='students') renderStudents();
+  if(t==='attendance'){ document.getElementById('attDate').value = today(); renderRoster(); renderAttendanceHistory(); }
+  if(t==='invoices') renderInvoices();
+  if(t==='sponsors') renderSponsors();
+}
+
+// ─────────── Modal ───────────
+function openModal(title, bodyHtml, footHtml){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  document.getElementById('modalFoot').innerHTML = footHtml;
+  document.getElementById('modalBackdrop').classList.add('active');
+}
+function closeModal(){ document.getElementById('modalBackdrop').classList.remove('active'); }
+document.getElementById('modalBackdrop').addEventListener('click', e=>{ if(e.target.id==='modalBackdrop') closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+// ─────────── Students ───────────
+function openStudentModal(id){
+  const s = id ? state.students.find(x=>x.id===id) : { id:'', name:'', age:'', level:'Beginner', guardian:'', phone:'', email:'', joined:today(), notes:'' };
+  openModal(id?'Edit Student':'Add Student', `
+    <div class="form-grid">
+      <div class="field"><label>Full Name *</label><input id="fStudName" value="${esc(s.name)}" required/></div>
+      <div class="field"><label>Age</label><input id="fStudAge" type="number" value="${esc(s.age)}"/></div>
+      <div class="field"><label>Level</label>
+        <select id="fStudLevel">
+          ${['Beginner','Intermediate','Advanced','Elite'].map(l=>`<option ${l===s.level?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Guardian</label><input id="fStudGuardian" value="${esc(s.guardian)}"/></div>
+      <div class="field"><label>Phone</label><input id="fStudPhone" value="${esc(s.phone)}"/></div>
+      <div class="field"><label>Email</label><input id="fStudEmail" type="email" value="${esc(s.email)}"/></div>
+      <div class="field"><label>Joined</label><input id="fStudJoined" type="date" value="${esc(s.joined)}"/></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="fStudNotes">${esc(s.notes)}</textarea></div>
+  `, `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" id="btnSaveStud" onclick="saveStudent('${id||''}')">${id?'Save Changes':'Add Student'}</button>
+  `);
+}
+async function saveStudent(id){
+  const name = document.getElementById('fStudName').value.trim();
+  if(!name){ toast('Name is required', 'error'); return; }
+  const btn = document.getElementById('btnSaveStud'); btn.disabled = true;
+  const ageStr = document.getElementById('fStudAge').value;
+  const data = {
+    name,
+    age: ageStr ? parseInt(ageStr,10) : null,
+    level: document.getElementById('fStudLevel').value,
+    guardian: document.getElementById('fStudGuardian').value.trim() || null,
+    phone: document.getElementById('fStudPhone').value.trim() || null,
+    email: document.getElementById('fStudEmail').value.trim() || null,
+    joined: document.getElementById('fStudJoined').value || null,
+    notes: document.getElementById('fStudNotes').value.trim() || null
+  };
+  let result;
+  if(id) result = await sb.from('utsm_students').update(data).eq('id', id);
+  else   result = await sb.from('utsm_students').insert(data);
+  btn.disabled = false;
+  if(result.error){ toast(result.error.message, 'error'); return; }
+  await loadAll(); closeModal(); renderStudents(); renderCounts();
+  toast(id?'Student updated':'Student added', 'success');
+}
+async function deleteStudent(id){
+  if(!confirm('Delete this student? Their attendance records will keep the name.')) return;
+  const { error } = await sb.from('utsm_students').delete().eq('id', id);
+  if(error){ toast(error.message, 'error'); return; }
+  await loadAll(); renderStudents(); renderCounts(); toast('Student removed', 'success');
+}
+function renderStudents(q){
+  q = (q||'').toLowerCase();
+  const filtered = state.students.filter(s=> !q || [s.name,s.level,s.guardian,s.phone].join(' ').toLowerCase().includes(q));
+  const tbody = document.getElementById('studentsBody');
+  if(!filtered.length){
+    tbody.innerHTML = `<tr class="row-empty"><td colspan="7"><div class="empty"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><h4>No students yet</h4><p>Add your first student to start tracking attendance and invoicing.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(s=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:11px;"><div style="width:36px;height:36px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--navy);font-size:.78rem;flex-shrink:0;">${esc(studentInitials(s.name))}</div><div><div style="font-weight:600;color:var(--text);">${esc(s.name)}</div>${s.email?`<div style="font-size:.78rem;color:var(--muted);">${esc(s.email)}</div>`:''}</div></div></td>
+      <td>${esc(s.age)||''}</td>
+      <td><span class="pill pill-indigo">${esc(s.level)}</span></td>
+      <td>${esc(s.guardian)||''}</td>
+      <td class="nowrap">${esc(s.phone)||''}</td>
+      <td class="nowrap">${fmtDate(s.joined)||''}</td>
+      <td style="text-align:right;" class="nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="openStudentModal('${s.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteStudent('${s.id}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ─────────── Attendance ───────────
+function renderRoster(){
+  const list = document.getElementById('rosterList');
+  if(!state.students.length){
+    list.innerHTML = `<div class="empty"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/></svg></div><h4>No students enrolled</h4><p>Add students before recording attendance.</p></div>`;
+    return;
+  }
+  list.innerHTML = state.students.map(s=>`
+    <div class="roster-row" data-id="${s.id}">
+      <div class="roster-name">${esc(s.name)}<small>${esc(s.level)} · ${esc(s.guardian)||'No guardian'}</small></div>
+      <div class="roster-actions">
+        <button class="att-btn present" data-state="present" onclick="setAtt(this)">Present</button>
+        <button class="att-btn late" data-state="late" onclick="setAtt(this)">Late</button>
+        <button class="att-btn absent" data-state="absent" onclick="setAtt(this)">Absent</button>
+      </div>
+    </div>
+  `).join('');
+}
+function setAtt(btn){
+  const parent = btn.closest('.roster-actions');
+  parent.querySelectorAll('.att-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+function markAllPresent(){
+  document.querySelectorAll('#rosterList .roster-row').forEach(r=>{
+    r.querySelectorAll('.att-btn').forEach(b=>b.classList.remove('selected'));
+    r.querySelector('.att-btn.present').classList.add('selected');
+  });
+}
+async function saveAttendance(){
+  const date = document.getElementById('attDate').value;
+  if(!date){ toast('Select a session date', 'error'); return; }
+  const rows = [...document.querySelectorAll('#rosterList .roster-row')];
+  if(!rows.length){ toast('No students to record', 'error'); return; }
+  const records = rows.map(r=>{
+    const sel = r.querySelector('.att-btn.selected');
+    return { student_id: r.dataset.id, status: sel ? sel.dataset.state : 'unmarked' };
+  });
+  if(records.every(r=>r.status==='unmarked')){
+    if(!confirm('No students were marked. Save anyway?')) return;
+  }
+  const { data: sess, error: e1 } = await sb.from('utsm_attendance_sessions').insert({
+    date,
+    type: document.getElementById('attType').value,
+    notes: document.getElementById('attNotes').value.trim() || null
+  }).select().single();
+  if(e1){ toast(e1.message, 'error'); return; }
+  const { error: e2 } = await sb.from('utsm_attendance_records').insert(
+    records.map(r => ({ ...r, session_id: sess.id }))
+  );
+  if(e2){
+    await sb.from('utsm_attendance_sessions').delete().eq('id', sess.id);
+    toast(e2.message, 'error'); return;
+  }
+  await loadAll();
+  document.getElementById('attNotes').value = '';
+  renderRoster(); renderAttendanceHistory();
+  toast('Attendance saved', 'success');
+}
+async function deleteAttendance(id){
+  if(!confirm('Delete this attendance session?')) return;
+  const { error } = await sb.from('utsm_attendance_sessions').delete().eq('id', id);
+  if(error){ toast(error.message, 'error'); return; }
+  await loadAll(); renderAttendanceHistory(); renderDashboard();
+  toast('Session deleted', 'success');
+}
+function renderAttendanceHistory(){
+  const tbody = document.getElementById('attendanceHistoryBody');
+  const sorted = [...state.attendance];
+  if(!sorted.length){
+    tbody.innerHTML = `<tr class="row-empty"><td colspan="7"><div class="empty"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/></svg></div><h4>No history yet</h4><p>Saved sessions will appear here.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = sorted.map(a=>{
+    const recs = a.records || [];
+    const p = recs.filter(r=>r.status==='present').length;
+    const ab = recs.filter(r=>r.status==='absent').length;
+    const l = recs.filter(r=>r.status==='late').length;
+    return `<tr>
+      <td class="nowrap"><strong>${fmtDate(a.date)}</strong></td>
+      <td>${esc(a.type)}</td>
+      <td><span class="pill pill-green">${p}</span></td>
+      <td><span class="pill pill-rose">${ab}</span></td>
+      <td><span class="pill pill-gold">${l}</span></td>
+      <td>${esc(a.notes)||''}</td>
+      <td style="text-align:right;"><button class="btn btn-danger btn-sm" onclick="deleteAttendance('${a.id}')">Delete</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ─────────── Invoices ───────────
+function nextInvoiceNum(){
+  const nums = state.invoices.map(i=> parseInt((i.number||'').replace(/[^0-9]/g,''),10)).filter(n=>!isNaN(n));
+  const next = (nums.length ? Math.max(...nums) : 1000) + 1;
+  return 'INV-' + next;
+}
+function openInvoiceModal(id){
+  const inv = id ? state.invoices.find(x=>x.id===id) : { id:'', number:nextInvoiceNum(), student_id:'', date:today(), description:'Monthly tuition', amount:'', status:'unpaid', due_date:'' };
+  const studOpts = state.students.map(s=>`<option value="${s.id}" ${s.id===inv.student_id?'selected':''}>${esc(s.name)}</option>`).join('');
+  openModal(id?'Edit Invoice':'New Invoice', `
+    <div class="form-grid">
+      <div class="field"><label>Invoice #</label><input id="fInvNum" value="${esc(inv.number)}"/></div>
+      <div class="field"><label>Student *</label><select id="fInvStudent"><option value="">Select a student</option>${studOpts}</select></div>
+      <div class="field"><label>Date</label><input id="fInvDate" type="date" value="${esc(inv.date)}"/></div>
+      <div class="field"><label>Due Date</label><input id="fInvDue" type="date" value="${esc(inv.due_date)}"/></div>
+      <div class="field"><label>Amount (₦) *</label><input id="fInvAmt" type="number" step="0.01" value="${esc(inv.amount)}"/></div>
+      <div class="field"><label>Status</label>
+        <select id="fInvStatus">
+          <option value="unpaid" ${inv.status==='unpaid'?'selected':''}>Unpaid</option>
+          <option value="paid" ${inv.status==='paid'?'selected':''}>Paid</option>
+          <option value="overdue" ${inv.status==='overdue'?'selected':''}>Overdue</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Description</label><textarea id="fInvDesc">${esc(inv.description)}</textarea></div>
+  `, `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" id="btnSaveInv" onclick="saveInvoice('${id||''}')">${id?'Save Changes':'Create Invoice'}</button>
+  `);
+  if(inv.student_id) document.getElementById('fInvStudent').value = inv.student_id;
+}
+async function saveInvoice(id){
+  const student_id = document.getElementById('fInvStudent').value;
+  const amount = parseFloat(document.getElementById('fInvAmt').value);
+  if(!student_id){ toast('Choose a student', 'error'); return; }
+  if(isNaN(amount) || amount<=0){ toast('Enter a valid amount', 'error'); return; }
+  const btn = document.getElementById('btnSaveInv'); btn.disabled = true;
+  const data = {
+    number: document.getElementById('fInvNum').value.trim() || nextInvoiceNum(),
+    student_id,
+    date: document.getElementById('fInvDate').value || null,
+    due_date: document.getElementById('fInvDue').value || null,
+    amount,
+    status: document.getElementById('fInvStatus').value,
+    description: document.getElementById('fInvDesc').value.trim() || null
+  };
+  let result;
+  if(id) result = await sb.from('utsm_invoices').update(data).eq('id', id);
+  else   result = await sb.from('utsm_invoices').insert(data);
+  btn.disabled = false;
+  if(result.error){ toast(result.error.message, 'error'); return; }
+  await loadAll(); closeModal(); renderInvoices(); renderCounts();
+  toast(id?'Invoice updated':'Invoice created', 'success');
+}
+async function toggleInvoicePaid(id){
+  const inv = state.invoices.find(x=>x.id===id);
+  const newStatus = inv.status==='paid' ? 'unpaid' : 'paid';
+  const { error } = await sb.from('utsm_invoices').update({ status:newStatus }).eq('id', id);
+  if(error){ toast(error.message, 'error'); return; }
+  await loadAll(); renderInvoices();
+  toast(newStatus==='paid'?'Marked as paid':'Marked unpaid', 'success');
+}
+async function deleteInvoice(id){
+  if(!confirm('Delete this invoice?')) return;
+  const { error } = await sb.from('utsm_invoices').delete().eq('id', id);
+  if(error){ toast(error.message, 'error'); return; }
+  await loadAll(); renderInvoices(); renderCounts();
+  toast('Invoice deleted', 'success');
+}
+function viewInvoice(id){
+  const inv = state.invoices.find(x=>x.id===id);
+  const stud = state.students.find(s=>s.id===inv.student_id);
+  const statusPill = inv.status==='paid'?'pill-green':inv.status==='overdue'?'pill-rose':'pill-gold';
+  openModal('Invoice ' + inv.number, `
+    <div class="invoice-preview">
+      <div class="inv-header">
+        <div>
+          <h4>Unbeatable Tennis Swing Model</h4>
+          <small>Led by Coach Mimi · Lagos, Nigeria<br/>+234 802 054 4201 · akosilelinda@gmail.com</small>
+        </div>
+        <div class="inv-num">
+          <div class="lg">${esc(inv.number)}</div>
+          <div>${fmtDate(inv.date)}</div>
+        </div>
+      </div>
+      <div class="inv-bill">
+        <strong>Bill To</strong>
+        <div style="font-weight:600;color:var(--text);">${esc(stud?stud.name:'Unknown')}</div>
+        ${stud&&stud.guardian?`<div style="color:var(--muted);font-size:.85rem;">${esc(stud.guardian)}</div>`:''}
+      </div>
+      <div class="inv-rows">
+        <div class="inv-row"><span>${esc(inv.description)||'Service'}</span><span>${fmt$(inv.amount)}</span></div>
+      </div>
+      <div class="inv-total"><span>TOTAL</span><span>${fmt$(inv.amount)}</span></div>
+      <div style="margin-top:18px;font-size:.85rem;">Status: <span class="pill ${statusPill}">${esc(inv.status.toUpperCase())}</span>${inv.due_date?`<br><small style="color:var(--muted);">Due: ${fmtDate(inv.due_date)}</small>`:''}</div>
+    </div>
+  `, `<button class="btn btn-ghost" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="window.print()">🖨 Print</button>`);
+}
+function renderInvoices(q){
+  q = (q||'').toLowerCase();
+  const tbody = document.getElementById('invoicesBody');
+  const sorted = [...state.invoices];
+  const filtered = sorted.filter(inv=>{
+    if(!q) return true;
+    const stud = state.students.find(s=>s.id===inv.student_id);
+    return [inv.number, inv.description, stud?stud.name:''].join(' ').toLowerCase().includes(q);
+  });
+  if(!filtered.length){
+    tbody.innerHTML = `<tr class="row-empty"><td colspan="7"><div class="empty"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><h4>No invoices</h4><p>Issue your first invoice to start tracking payments.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(inv=>{
+    const stud = state.students.find(s=>s.id===inv.student_id);
+    const statusPill = inv.status==='paid'?'pill-green':inv.status==='overdue'?'pill-rose':'pill-gold';
+    return `<tr>
+      <td class="nowrap"><strong>${esc(inv.number)}</strong></td>
+      <td>${stud?esc(stud.name):'<em style="color:var(--muted-2);">Removed</em>'}</td>
+      <td class="nowrap">${fmtDate(inv.date)||''}</td>
+      <td>${esc(inv.description)||''}</td>
+      <td class="nowrap"><strong>${fmt$(inv.amount)}</strong></td>
+      <td><span class="pill ${statusPill}">${esc(inv.status.toUpperCase())}</span></td>
+      <td style="text-align:right;" class="nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="viewInvoice('${inv.id}')">View</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleInvoicePaid('${inv.id}')">${inv.status==='paid'?'Unmark':'Mark Paid'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="openInvoiceModal('${inv.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInvoice('${inv.id}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ─────────── Sponsors ───────────
+function openSponsorModal(id){
+  const s = id ? state.sponsors.find(x=>x.id===id) : { id:'', name:'', tier:'Bronze', contact:'', phone:'', email:'', amount:'', since:today(), notes:'' };
+  openModal(id?'Edit Sponsor':'Add Sponsor', `
+    <div class="form-grid">
+      <div class="field"><label>Sponsor Name *</label><input id="fSpName" value="${esc(s.name)}"/></div>
+      <div class="field"><label>Tier</label>
+        <select id="fSpTier">
+          ${['Platinum','Gold','Silver','Bronze'].map(t=>`<option ${t===s.tier?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Contact Person</label><input id="fSpContact" value="${esc(s.contact)}"/></div>
+      <div class="field"><label>Phone</label><input id="fSpPhone" value="${esc(s.phone)}"/></div>
+      <div class="field"><label>Email</label><input id="fSpEmail" type="email" value="${esc(s.email)}"/></div>
+      <div class="field"><label>Contribution (₦)</label><input id="fSpAmt" type="number" step="0.01" value="${esc(s.amount)}"/></div>
+      <div class="field"><label>Sponsor Since</label><input id="fSpSince" type="date" value="${esc(s.since)}"/></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="fSpNotes">${esc(s.notes)}</textarea></div>
+  `, `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" id="btnSaveSp" onclick="saveSponsor('${id||''}')">${id?'Save Changes':'Add Sponsor'}</button>
+  `);
+}
+async function saveSponsor(id){
+  const name = document.getElementById('fSpName').value.trim();
+  if(!name){ toast('Sponsor name is required', 'error'); return; }
+  const btn = document.getElementById('btnSaveSp'); btn.disabled = true;
+  const data = {
+    name,
+    tier: document.getElementById('fSpTier').value,
+    contact: document.getElementById('fSpContact').value.trim() || null,
+    phone: document.getElementById('fSpPhone').value.trim() || null,
+    email: document.getElementById('fSpEmail').value.trim() || null,
+    amount: parseFloat(document.getElementById('fSpAmt').value)||0,
+    since: document.getElementById('fSpSince').value || null,
+    notes: document.getElementById('fSpNotes').value.trim() || null
+  };
+  let result;
+  if(id) result = await sb.from('utsm_sponsors').update(data).eq('id', id);
+  else   result = await sb.from('utsm_sponsors').insert(data);
+  btn.disabled = false;
+  if(result.error){ toast(result.error.message, 'error'); return; }
+  await loadAll(); closeModal(); renderSponsors(); renderCounts();
+  toast(id?'Sponsor updated':'Sponsor added', 'success');
+}
+async function deleteSponsor(id){
+  if(!confirm('Remove this sponsor?')) return;
+  const { error } = await sb.from('utsm_sponsors').delete().eq('id', id);
+  if(error){ toast(error.message, 'error'); return; }
+  await loadAll(); renderSponsors(); renderCounts();
+  toast('Sponsor removed', 'success');
+}
+function tierBadge(tier){
+  const cls = { Platinum:'tier-platinum', Gold:'tier-gold', Silver:'tier-silver', Bronze:'tier-bronze' }[tier] || 'tier-bronze';
+  return `<span class="tier-badge ${cls}">${esc(tier)}</span>`;
+}
+function renderSponsors(q){
+  q = (q||'').toLowerCase();
+  const tierRank = {Platinum:4,Gold:3,Silver:2,Bronze:1};
+  const sorted = [...state.sponsors].sort((a,b)=>(tierRank[b.tier]||0)-(tierRank[a.tier]||0) || (b.amount||0)-(a.amount||0));
+  const filtered = sorted.filter(s=> !q || [s.name,s.tier,s.contact].join(' ').toLowerCase().includes(q));
+  const tbody = document.getElementById('sponsorsBody');
+  if(!filtered.length){
+    tbody.innerHTML = `<tr class="row-empty"><td colspan="7"><div class="empty"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div><h4>No sponsors yet</h4><p>Add partners and supporters of the academy.</p></div></td></tr>`;
+  } else {
+    tbody.innerHTML = filtered.map(s=>`
+      <tr>
+        <td><div style="font-weight:600;color:var(--text);">${esc(s.name)}</div>${s.notes?`<div style="font-size:.78rem;color:var(--muted);">${esc(s.notes)}</div>`:''}</td>
+        <td>${tierBadge(s.tier)}</td>
+        <td>${esc(s.contact)||''}${s.email?`<div style="font-size:.78rem;color:var(--muted);">${esc(s.email)}</div>`:''}</td>
+        <td class="nowrap">${esc(s.phone)||''}</td>
+        <td class="nowrap"><strong>${fmt$(s.amount)}</strong></td>
+        <td class="nowrap">${fmtDate(s.since)||''}</td>
+        <td style="text-align:right;" class="nowrap">
+          <button class="btn btn-ghost btn-sm" onclick="openSponsorModal('${s.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSponsor('${s.id}')">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+  document.getElementById('statSponsorCount').textContent = state.sponsors.length;
+  const total = state.sponsors.reduce((a,b)=>a+Number(b.amount||0),0);
+  document.getElementById('statSponsorTotal').textContent = fmt$(total);
+  const top = sorted[0];
+  document.getElementById('statTopTier').textContent = top ? `${top.name}` : '—';
+}
+
+// ─────────── Dashboard ───────────
+function renderDashboard(){
+  document.getElementById('statStudents').textContent = state.students.length;
+  const paid = state.invoices.filter(i=>i.status==='paid').reduce((a,b)=>a+Number(b.amount||0),0);
+  const owed = state.invoices.filter(i=>i.status!=='paid').reduce((a,b)=>a+Number(b.amount||0),0);
+  document.getElementById('statRevenue').textContent = fmt$(paid);
+  document.getElementById('statOutstanding').textContent = fmt$(owed);
+  document.getElementById('statSponsor').textContent = fmt$(state.sponsors.reduce((a,b)=>a+Number(b.amount||0),0));
+
+  const ra = document.getElementById('recentAttendance');
+  const recent = [...state.attendance].slice(0,5);
+  if(!recent.length){
+    ra.innerHTML = `<div class="empty"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/></svg></div><p>No sessions recorded yet.</p></div>`;
+  } else {
+    ra.innerHTML = `<table><thead><tr><th>Date</th><th>Type</th><th>Present</th><th>Absent</th><th>Late</th></tr></thead><tbody>${
+      recent.map(a=>{
+        const recs = a.records||[];
+        const p=recs.filter(r=>r.status==='present').length;
+        const ab=recs.filter(r=>r.status==='absent').length;
+        const l=recs.filter(r=>r.status==='late').length;
+        return `<tr><td class="nowrap">${fmtDate(a.date)}</td><td>${esc(a.type)}</td><td><span class="pill pill-green">${p}</span></td><td><span class="pill pill-rose">${ab}</span></td><td><span class="pill pill-gold">${l}</span></td></tr>`;
+      }).join('')
+    }</tbody></table>`;
+  }
+
+  const ri = document.getElementById('recentInvoices');
+  const recentInv = [...state.invoices].slice(0,5);
+  if(!recentInv.length){
+    ri.innerHTML = `<div class="empty"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div><p>No invoices issued yet.</p></div>`;
+  } else {
+    ri.innerHTML = `<table><thead><tr><th>Invoice</th><th>Student</th><th>Amount</th><th>Status</th></tr></thead><tbody>${
+      recentInv.map(inv=>{
+        const stud = state.students.find(s=>s.id===inv.student_id);
+        const pc = inv.status==='paid'?'pill-green':inv.status==='overdue'?'pill-rose':'pill-gold';
+        return `<tr><td class="nowrap"><strong>${esc(inv.number)}</strong></td><td>${stud?esc(stud.name):''}</td><td class="nowrap">${fmt$(inv.amount)}</td><td><span class="pill ${pc}">${esc(inv.status.toUpperCase())}</span></td></tr>`;
+      }).join('')
+    }</tbody></table>`;
+  }
+}
+function renderCounts(){
+  document.getElementById('cntStudents').textContent = state.students.length;
+  document.getElementById('cntInvoices').textContent = state.invoices.length;
+  document.getElementById('cntSponsors').textContent = state.sponsors.length;
+}
+
+// ─────────── Import / Export ───────────
+function exportData(){
+  const payload = { exported_at: new Date().toISOString(), ...state };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'unbeatable-tennis-' + today() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('Backup downloaded', 'success');
+}
+function importData(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  toast('Import is disabled when using the cloud backend. Edit data directly via the admin pages.', 'error');
+  ev.target.value = '';
+}
+
+// ─────────── Boot ───────────
+async function boot(){
+  await loadAll();
+  renderCounts();
+  renderDashboard();
+  renderStudents();
+  renderInvoices();
+  renderSponsors();
+  document.getElementById('attDate').value = today();
+  renderRoster();
+  renderAttendanceHistory();
+}
+
+(async () => {
+  if(await checkSession()) await showApp();
+  else showLogin();
+})();
+
+// Listen for auth state changes (token refresh, sign-out from another tab)
+sb.auth.onAuthStateChange((event, session) => {
+  if(event === 'SIGNED_OUT' && !session) location.reload();
+});
+</script>
+
+
+</body>
+</html>
